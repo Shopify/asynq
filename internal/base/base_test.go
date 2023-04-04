@@ -343,18 +343,21 @@ func TestUniqueKey(t *testing.T) {
 		sum := md5.Sum(data)
 		return hex.EncodeToString(sum[:])
 	}
+
 	tests := []struct {
-		desc     string
-		qname    string
-		tasktype string
-		payload  []byte
-		want     string
+		desc       string
+		qname      string
+		tasktype   string
+		payload    []byte
+		customHash []byte
+		want       string
 	}{
 		{
 			"with primitive types",
 			"default",
 			"email:send",
 			payload1,
+			nil,
 			fmt.Sprintf("asynq:{default}:unique:email:send:%s", checksum(payload1)),
 		},
 		{
@@ -362,6 +365,7 @@ func TestUniqueKey(t *testing.T) {
 			"default",
 			"email:send",
 			payload2,
+			nil,
 			fmt.Sprintf("asynq:{default}:unique:email:send:%s", checksum(payload2)),
 		},
 		{
@@ -369,6 +373,7 @@ func TestUniqueKey(t *testing.T) {
 			"default",
 			"email:send",
 			payload3,
+			nil,
 			fmt.Sprintf("asynq:{default}:unique:email:send:%s", checksum(payload3)),
 		},
 		{
@@ -376,6 +381,7 @@ func TestUniqueKey(t *testing.T) {
 			"default",
 			"email:send",
 			payload4,
+			nil,
 			fmt.Sprintf("asynq:{default}:unique:email:send:%s", checksum(payload4)),
 		},
 		{
@@ -383,14 +389,24 @@ func TestUniqueKey(t *testing.T) {
 			"default",
 			"reindex",
 			nil,
+			nil,
 			"asynq:{default}:unique:reindex:",
+		},
+		{
+			"with custom hash",
+			"default",
+			"email:send",
+			payload1,
+			[]byte("foo"),
+			fmt.Sprintf("asynq:{default}:unique:email:send:%s", checksum([]byte("foo"))),
 		},
 	}
 
 	for _, tc := range tests {
-		got := UniqueKey(tc.qname, tc.tasktype, tc.payload)
+		got := UniqueKey(tc.qname, tc.tasktype, tc.payload, tc.customHash)
 		if got != tc.want {
-			t.Errorf("%s: UniqueKey(%q, %q, %v) = %q, want %q", tc.desc, tc.qname, tc.tasktype, tc.payload, got, tc.want)
+			t.Errorf("%s: UniqueKey(%q, %q, %v, %v) = %q, want %q",
+				tc.desc, tc.qname, tc.tasktype, tc.payload, tc.customHash, got, tc.want)
 		}
 	}
 }

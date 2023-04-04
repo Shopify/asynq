@@ -50,6 +50,7 @@ const (
 	RetentionOpt
 	GroupOpt
 	MetadataOpt
+	UniqueHashOpt
 )
 
 // Option specifies the task processing behavior.
@@ -66,17 +67,18 @@ type Option interface {
 
 // Internal option representations.
 type (
-	retryOption     int
-	queueOption     string
-	taskIDOption    string
-	timeoutOption   time.Duration
-	deadlineOption  time.Time
-	uniqueOption    time.Duration
-	processAtOption time.Time
-	processInOption time.Duration
-	retentionOption time.Duration
-	groupOption     string
-	metadataOption  map[string]string
+	retryOption      int
+	queueOption      string
+	taskIDOption     string
+	timeoutOption    time.Duration
+	deadlineOption   time.Time
+	uniqueOption     time.Duration
+	processAtOption  time.Time
+	processInOption  time.Duration
+	retentionOption  time.Duration
+	groupOption      string
+	metadataOption   map[string]string
+	uniqueHashOption []byte
 )
 
 // MaxRetry returns an option to specify the max number of times
@@ -216,6 +218,14 @@ func (md metadataOption) String() string     { return fmt.Sprintf("Metadata(%v)"
 func (md metadataOption) Type() OptionType   { return MetadataOpt }
 func (md metadataOption) Value() interface{} { return map[string]string(md) }
 
+func UniqueHash(hash []byte) Option {
+	return uniqueHashOption(hash)
+}
+
+func (h uniqueHashOption) String() string     { return fmt.Sprintf("UniqueHash(%v)", []byte(h)) }
+func (h uniqueHashOption) Type() OptionType   { return UniqueHashOpt }
+func (h uniqueHashOption) Value() interface{} { return []byte(h) }
+
 // ErrDuplicateTask indicates that the given task could not be enqueued since it's a duplicate of another task.
 //
 // ErrDuplicateTask error only applies to tasks enqueued with a Unique option.
@@ -227,16 +237,17 @@ var ErrDuplicateTask = errors.New("task already exists")
 var ErrTaskIDConflict = errors.New("task ID conflicts with another task")
 
 type option struct {
-	retry     int
-	queue     string
-	taskID    string
-	timeout   time.Duration
-	deadline  time.Time
-	uniqueTTL time.Duration
-	processAt time.Time
-	retention time.Duration
-	group     string
-	metadata  map[string]string
+	retry      int
+	queue      string
+	taskID     string
+	timeout    time.Duration
+	deadline   time.Time
+	uniqueTTL  time.Duration
+	processAt  time.Time
+	retention  time.Duration
+	group      string
+	metadata   map[string]string
+	uniqueHash []byte
 }
 
 // composeOptions merges user provided options into the default options
@@ -298,6 +309,8 @@ func composeOptions(opts ...Option) (option, error) {
 				}
 				res.metadata[k] = v
 			}
+		case uniqueHashOption:
+			res.uniqueHash = opt
 		default:
 			// ignore unexpected option
 		}
@@ -384,7 +397,11 @@ func (c *Client) EnqueueContext(ctx context.Context, task *Task, opts ...Option)
 	}
 	var uniqueKey string
 	if opt.uniqueTTL > 0 {
-		uniqueKey = base.UniqueKey(opt.queue, task.Type(), task.Payload())
+		uniqueKey = base.UniqueKey(
+			opt.queue,
+			task.Type(),
+			task.Payload(),
+			opt.uniqueHash)
 	}
 	msg := &base.TaskMessage{
 		ID:        opt.taskID,

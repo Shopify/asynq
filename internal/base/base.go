@@ -10,6 +10,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"hash"
 	"strings"
 	"sync"
 	"time"
@@ -196,12 +197,24 @@ func SchedulerHistoryKey(entryID string) string {
 	return fmt.Sprintf("asynq:scheduler_history:%s", entryID)
 }
 
+type hasher func(payload []byte, h hash.Hash)
+
 // UniqueKey returns a redis key with the given type, payload, and queue name.
-func UniqueKey(qname, tasktype string, payload []byte) string {
+// If the payload is nil, it will return a key without the checksum portion.
+// If the optional uniqueHash is provided, it will be used to generate the checksum portion,
+// otherwise the payload will be used.
+func UniqueKey(qname, tasktype string, payload []byte, uniqueHash []byte) string {
 	if payload == nil {
 		return fmt.Sprintf("%sunique:%s:", QueueKeyPrefix(qname), tasktype)
 	}
-	checksum := md5.Sum(payload)
+
+	var checksum [16]byte
+	if uniqueHash != nil {
+		checksum = md5.Sum(uniqueHash)
+	} else {
+		checksum = md5.Sum(payload)
+	}
+
 	return fmt.Sprintf("%sunique:%s:%s", QueueKeyPrefix(qname), tasktype, hex.EncodeToString(checksum[:]))
 }
 

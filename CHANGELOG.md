@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.25.0] - 2023-03-05
+
+### Added
+- Support unique hash option to generate checksum portion of the unique key.
+
+### Changed
+- Renamed modules to `github.com/Shopify/asynq`
+- Update to Go 1.20
+
 ## [0.24.0] - 2023-01-02
 
 ### Added

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.25.2] - 2023-03-11
+- Fix redis url parsing to handle trailing slash case.
+
 ## [0.25.1] - 2023-03-05
 - Tidy modules
 

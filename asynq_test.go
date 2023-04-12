@@ -102,7 +102,15 @@ func TestParseRedisURI(t *testing.T) {
 			RedisClientOpt{Addr: "localhost:6379"},
 		},
 		{
+			"redis://localhost:6379/",
+			RedisClientOpt{Addr: "localhost:6379"},
+		},
+		{
 			"rediss://localhost:6379",
+			RedisClientOpt{Addr: "localhost:6379", TLSConfig: &tls.Config{ServerName: "localhost"}},
+		},
+		{
+			"rediss://localhost:6379/",
 			RedisClientOpt{Addr: "localhost:6379", TLSConfig: &tls.Config{ServerName: "localhost"}},
 		},
 		{

@@ -467,9 +467,11 @@ func parseRedisURI(u *url.URL) (RedisConnOpt, error) {
 
 	if len(u.Path) > 0 {
 		xs := strings.Split(strings.Trim(u.Path, "/"), "/")
-		db, err = strconv.Atoi(xs[0])
-		if err != nil {
-			return nil, fmt.Errorf("asynq: could not parse redis uri: database number should be the first segment of the path")
+		if len(xs[0]) > 0 {
+			db, err = strconv.Atoi(xs[0])
+			if err != nil {
+				return nil, fmt.Errorf("asynq: could not parse redis uri: database number should be the first segment of the path")
+			}
 		}
 	}
 	var password string

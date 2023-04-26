@@ -26,19 +26,19 @@ Task queues are used as a mechanism to distribute work across multiple machines.
 
 - Guaranteed [at least one execution](https://www.cloudcomputingpatterns.org/at_least_once_delivery/) of a task
 - Scheduling of tasks
-- [Retries](https://github.com/Shopify/asynq/wiki/Task-Retry) of failed tasks
+- [Retries](https://github.com/hibiken/asynq/wiki/Task-Retry) of failed tasks
 - Automatic recovery of tasks in the event of a worker crash
-- [Weighted priority queues](https://github.com/Shopify/asynq/wiki/Queue-Priority#weighted-priority)
-- [Strict priority queues](https://github.com/Shopify/asynq/wiki/Queue-Priority#strict-priority)
+- [Weighted priority queues](https://github.com/hibiken/asynq/wiki/Queue-Priority#weighted-priority)
+- [Strict priority queues](https://github.com/hibiken/asynq/wiki/Queue-Priority#strict-priority)
 - Low latency to add a task since writes are fast in Redis
-- De-duplication of tasks using [unique option](https://github.com/Shopify/asynq/wiki/Unique-Tasks)
-- Allow [timeout and deadline per task](https://github.com/Shopify/asynq/wiki/Task-Timeout-and-Cancelation)
-- Allow [aggregating group of tasks](https://github.com/Shopify/asynq/wiki/Task-aggregation) to batch multiple successive operations
-- [Flexible handler interface with support for middlewares](https://github.com/Shopify/asynq/wiki/Handler-Deep-Dive)
+- De-duplication of tasks using [unique option](https://github.com/hibiken/asynq/wiki/Unique-Tasks)
+- Allow [timeout and deadline per task](https://github.com/hibiken/asynq/wiki/Task-Timeout-and-Cancelation)
+- Allow [aggregating group of tasks](https://github.com/hibiken/asynq/wiki/Task-aggregation) to batch multiple successive operations
+- [Flexible handler interface with support for middlewares](https://github.com/hibiken/asynq/wiki/Handler-Deep-Dive)
 - [Ability to pause queue](/tools/asynq/README.md#pause) to stop processing tasks from the queue
-- [Periodic Tasks](https://github.com/Shopify/asynq/wiki/Periodic-Tasks)
-- [Support Redis Cluster](https://github.com/Shopify/asynq/wiki/Redis-Cluster) for automatic sharding and high availability
-- [Support Redis Sentinels](https://github.com/Shopify/asynq/wiki/Automatic-Failover) for high availability
+- [Periodic Tasks](https://github.com/hibiken/asynq/wiki/Periodic-Tasks)
+- [Support Redis Cluster](https://github.com/hibiken/asynq/wiki/Redis-Cluster) for automatic sharding and high availability
+- [Support Redis Sentinels](https://github.com/hibiken/asynq/wiki/Automatic-Failover) for high availability
 - Integration with [Prometheus](https://prometheus.io/) to collect and visualize queue metrics
 - [Web UI](#web-ui) to inspect and remote-control queues and tasks
 - [CLI](#command-line-tool) to inspect and remote-control queues and tasks
@@ -258,7 +258,7 @@ func main() {
 }
 ```
 
-For a more detailed walk-through of the library, see our [Getting Started](https://github.com/Shopify/asynq/wiki/Getting-Started) guide.
+For a more detailed walk-through of the library, see our [Getting Started](https://github.com/hibiken/asynq/wiki/Getting-Started) guide.
 
 To learn more about `asynq` features and APIs, see the package [godoc](https://godoc.org/github.com/Shopify/asynq).
 
